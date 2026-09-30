@@ -29,7 +29,7 @@ export default function TemplateEditorial({ config }: { config: InvitationConfig
 
   return (
     <div className="font-serif bg-stone-50 text-stone-900 min-h-screen pb-20" style={{ '--bg-color': '#fafaf9', '--text-color': '#1c1917' } as React.CSSProperties}>
-      <header className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+      <header className="relative w-full h-screen flex flex-col items-center justify-end pb-24 overflow-hidden">
         {config.mainCoverImage ? (
           <img 
             src={config.mainCoverImage} 
