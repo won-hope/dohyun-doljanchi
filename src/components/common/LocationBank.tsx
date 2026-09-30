@@ -1,6 +1,6 @@
 'use client';
-import { motion } from 'framer-motion';
 import { InvitationConfig } from '@/types';
+import { motion } from 'framer-motion';
 
 export default function LocationBank({ config }: { config: InvitationConfig }) {
   const handleKakaoShare = () => {
@@ -49,7 +49,7 @@ export default function LocationBank({ config }: { config: InvitationConfig }) {
   return (
     <section id="location" className="py-20 px-6 max-w-md mx-auto">
       {/* 오시는 길 */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -59,10 +59,10 @@ export default function LocationBank({ config }: { config: InvitationConfig }) {
         <p className="text-xl font-bold text-gray-800 mb-2">{config.locationName}</p>
         <p className="text-sm text-gray-600 mb-1">{config.locationAddress}</p>
         {config.locationAddressDetail && <p className="text-xs text-gray-500 mb-8">{config.locationAddressDetail}</p>}
-        
+
         {/* 길찾기 버튼들 */}
         <div className="flex justify-center gap-3 mb-10">
-          <a 
+          <a
             href={mapLinks.naver}
             target="_blank"
             rel="noopener noreferrer"
@@ -70,7 +70,7 @@ export default function LocationBank({ config }: { config: InvitationConfig }) {
           >
             네이버지도
           </a>
-          <a 
+          <a
             href={mapLinks.kakao}
             target="_blank"
             rel="noopener noreferrer"
@@ -78,7 +78,7 @@ export default function LocationBank({ config }: { config: InvitationConfig }) {
           >
             카카오맵
           </a>
-          <a 
+          <a
             href={mapLinks.tmap}
             className="flex-1 bg-[#000000] text-white py-3 rounded-xl font-bold shadow-sm hover:opacity-90 transition text-sm flex flex-col items-center justify-center gap-1"
           >
@@ -88,12 +88,12 @@ export default function LocationBank({ config }: { config: InvitationConfig }) {
       </motion.div>
 
       {/* 공유하기 버튼 */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
       >
-        <button 
+        <button
           onClick={handleKakaoShare}
           className="w-full bg-[#FEE500] text-[#191919] font-bold py-4 rounded-2xl shadow-sm hover:bg-[#F4DC00] transition flex justify-center items-center gap-2"
         >
