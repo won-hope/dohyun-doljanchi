@@ -17,16 +17,16 @@ export default function LocationBank({ config }: { config: InvitationConfig }) {
           description: `일시: ${config.date} ${config.time}\n장소: ${config.locationName}`,
           imageUrl: config.mainCoverImage || 'https://cdn-icons-png.flaticon.com/512/3855/3855907.png',
           link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
+            mobileWebUrl: window.location.origin + window.location.pathname,
+            webUrl: window.location.origin + window.location.pathname,
           },
         },
         buttons: [
           {
             title: '초대장 보기',
             link: {
-              mobileWebUrl: window.location.href,
-              webUrl: window.location.href,
+              mobileWebUrl: window.location.origin + window.location.pathname,
+              webUrl: window.location.origin + window.location.pathname,
             },
           },
         ],
