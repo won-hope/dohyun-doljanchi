@@ -126,13 +126,13 @@ export default function Dashboard() {
           </button>
 
           <button onClick={() => handleThemeChange('CINEMATIC')} className={`p-4 border rounded-xl flex flex-col items-center transition ${config.selectedTemplate === 'CINEMATIC' ? 'border-purple-600 bg-purple-50 ring-2 ring-purple-600 ring-opacity-20' : 'border-gray-200 hover:bg-gray-50'}`}>
-            <div className="w-16 h-24 bg-black border border-gray-800 mb-3 flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-t from-black to-zinc-800 flex flex-col items-center justify-center">
+            <div className="w-16 h-24 bg-emerald-100 border border-emerald-200 mb-3 flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="w-full h-full bg-gradient-to-t from-emerald-200 to-emerald-50 flex flex-col items-center justify-center">
                 <div className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center text-white/50 text-[8px]">D-DAY</div>
               </div>
             </div>
-            <span className="font-bold text-gray-800 text-sm">시네마틱</span>
-            <span className="text-[10px] text-gray-500 mt-1 text-center">풀스크린 다크모드</span>
+            <span className="font-bold text-gray-800 text-sm">파스텔</span>
+            <span className="text-[10px] text-gray-500 mt-1 text-center">상큼 발랄 민트톤</span>
           </button>
         </div>
       </section>

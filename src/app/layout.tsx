@@ -46,6 +46,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${jua.variable} ${notoSans.variable}`}>
+      <head>
+        <meta name="color-scheme" content="light only" />
+        <meta name="supported-color-schemes" content="light" />
+      </head>
       <body className="antialiased text-gray-900 bg-gray-100 min-h-screen font-noto">
         <div className="max-w-md mx-auto bg-white min-h-screen shadow-md relative overflow-x-hidden">
           {children}
