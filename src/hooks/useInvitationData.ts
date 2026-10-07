@@ -8,6 +8,7 @@ import { InvitationConfig } from '@/types';
 const DEFAULT_CONFIG: InvitationConfig = {
   selectedTemplate: 'EDITORIAL',
   mainCoverImage: '',
+  coverFocusY: 30,
   scrollImages: [],
   babyName: '도현',
   date: '2023-10-31',
@@ -15,6 +16,7 @@ const DEFAULT_CONFIG: InvitationConfig = {
   locationName: '고궁 한정식',
   locationAddress: '강원도 원주시 운곡로 242 (1~2층)',
   locationAddressDetail: '지번: 행구동 393',
+  parkingInfo: '',
   greetingMessage: '도현이가 태어난 지 어느덧 1년이 되었습니다.\n건강하게 자랄 수 있도록 관심과 사랑으로 지켜봐 주신 분들을 모시고\n작은 잔치를 열고자 하오니 참석하시어 자리를 빛내주시면 감사하겠습니다.',
   fatherName: '아빠이름',
   fatherPhone: '010-0000-0000',
@@ -29,7 +31,12 @@ const DEFAULT_CONFIG: InvitationConfig = {
     { id: '1', question: '도현이의 태몽은?', answer: '커다란 황금돼지가 품에 안기는 꿈이었어요!' },
     { id: '2', question: '가장 좋아하는 것은?', answer: '아빠 얼굴 보고 꺄르르 웃기' }
   ],
+  useStory: true,
+  useGallery: true,
+  useTmi: true,
   useRsvp: true,
+  useQuiz: true,
+  useGuestbook: true,
 };
 
 export function useInvitationData() {

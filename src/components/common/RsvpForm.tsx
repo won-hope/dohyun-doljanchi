@@ -3,13 +3,55 @@ import { InvitationConfig } from '@/types';
 import { useRsvp } from '@/hooks/useRsvp';
 import confetti from 'canvas-confetti';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
+import SectionHeading from './SectionHeading';
+
+const FIELD = 'w-full min-h-[52px] px-4 rounded-xl border border-line bg-paper text-ink placeholder:text-mute/70';
+const PRIMARY_BTN =
+  'w-full min-h-[56px] rounded-xl bg-ink text-paper text-base font-bold transition-opacity hover:opacity-90 disabled:opacity-40';
+
+function Stepper({
+  label,
+  value,
+  min,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-line px-4 py-2">
+      <span className="text-base font-medium">{label}</span>
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          aria-label={`${label} 줄이기`}
+          onClick={() => onChange(Math.max(min, value - 1))}
+          className="w-11 h-11 rounded-full text-2xl text-ink hover:bg-paper-deep"
+        >
+          −
+        </button>
+        <span className="w-8 text-center text-lg font-bold" aria-live="polite">{value}</span>
+        <button
+          type="button"
+          aria-label={`${label} 늘리기`}
+          onClick={() => onChange(value + 1)}
+          className="w-11 h-11 rounded-full text-2xl text-ink hover:bg-paper-deep"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function RsvpForm({ config }: { config: InvitationConfig }) {
   const { addRsvp } = useRsvp();
-  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const [name, setName] = useState('');
   const [isAttending, setIsAttending] = useState(true);
   const [adultCount, setAdultCount] = useState(1);
@@ -31,9 +73,9 @@ export default function RsvpForm({ config }: { config: InvitationConfig }) {
         childCount: isAttending ? childCount : 0,
         needBabyChair: isAttending ? needBabyChair : false
       });
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, disableForReducedMotion: true });
       alert('참석 여부가 전달되었습니다. 감사합니다! 💛');
-      setIsOpen(false);
+      setIsSubmitted(true);
     } catch (error) {
       alert('오류가 발생했습니다.');
     } finally {
@@ -41,86 +83,84 @@ export default function RsvpForm({ config }: { config: InvitationConfig }) {
     }
   };
 
+  const choiceClass = (active: boolean) =>
+    `min-h-[52px] rounded-xl border text-base font-bold transition-colors ${
+      active ? 'bg-ink text-paper border-ink' : 'bg-paper text-ink border-line hover:bg-paper-deep'
+    }`;
+
+  if (isSubmitted) {
+    return (
+      <section id="rsvp" className="py-[72px] px-6 max-w-md mx-auto text-center">
+        <Reveal>
+          <div className="p-8 rounded-2xl bg-paper-deep border border-line">
+            <p className="text-xl font-display font-bold mb-2">감사합니다!</p>
+            <p className="text-mute">참석 여부가 소중히 전달되었습니다.</p>
+          </div>
+        </Reveal>
+      </section>
+    );
+  }
+
   return (
-    <section id="rsvp" className="py-16 px-6 max-w-md mx-auto">
-      <div className="bg-current/5 border border-current/10 p-6 rounded-3xl text-center">
-        <h2 className="text-xl font-bold mb-2">참석 여부 전달하기</h2>
-        <p className="text-sm opacity-70 mb-6 leading-relaxed">
-          원활한 행사 준비를 위해<br/>참석 여부를 미리 알려주시면 감사하겠습니다.
-        </p>
-        
-        {!isOpen ? (
-          <button 
-            onClick={() => setIsOpen(true)}
-            className="w-full py-4 rounded-xl bg-current text-white dark:text-black font-bold border border-current transition hover:scale-[1.02]"
-            style={{ color: 'var(--bg-color)', backgroundColor: 'var(--text-color)' }}
-          >
-            참석 여부 응답하기
-          </button>
-        ) : (
-          <motion.form 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            onSubmit={handleSubmit}
-            className="text-left space-y-5"
-          >
-            <div>
-              <label className="block text-xs font-bold opacity-80 mb-1">성함</label>
-              <input 
-                type="text" 
-                value={name} onChange={e => setName(e.target.value)}
-                placeholder="예) 홍길동"
-                required
-                className="w-full p-3 rounded-lg bg-current/5 border border-transparent focus:border-current/30 outline-none text-sm transition"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs font-bold opacity-80 mb-2">참석 여부</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button type="button" onClick={() => setIsAttending(true)} className={`p-3 rounded-lg text-sm font-bold border transition ${isAttending ? 'bg-current/10 border-current/30' : 'bg-transparent border-current/10 opacity-50'}`}>참석</button>
-                <button type="button" onClick={() => setIsAttending(false)} className={`p-3 rounded-lg text-sm font-bold border transition ${!isAttending ? 'bg-current/10 border-current/30' : 'bg-transparent border-current/10 opacity-50'}`}>마음으로 축하</button>
-              </div>
-            </div>
+    <section id="rsvp" className="py-[72px] px-6 max-w-md mx-auto">
+      <Reveal>
+        <SectionHeading
+          eyebrow="RSVP"
+          title="참석 여부 전달하기"
+          description="원활한 행사 준비를 위해 참석 여부를 미리 알려주시면 감사하겠습니다."
+        />
 
-            {isAttending && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 pt-2">
-                <div className="flex justify-between items-center bg-current/5 p-3 rounded-lg">
-                  <span className="text-sm font-bold opacity-80">어른 인원</span>
-                  <div className="flex items-center gap-4">
-                    <button type="button" onClick={() => setAdultCount(Math.max(1, adultCount - 1))} className="text-xl opacity-50 hover:opacity-100">-</button>
-                    <span className="w-4 text-center text-sm font-bold">{adultCount}</span>
-                    <button type="button" onClick={() => setAdultCount(adultCount + 1)} className="text-xl opacity-50 hover:opacity-100">+</button>
-                  </div>
-                </div>
-                
-                <div className="flex justify-between items-center bg-current/5 p-3 rounded-lg">
-                  <span className="text-sm font-bold opacity-80">아이 인원</span>
-                  <div className="flex items-center gap-4">
-                    <button type="button" onClick={() => setChildCount(Math.max(0, childCount - 1))} className="text-xl opacity-50 hover:opacity-100">-</button>
-                    <span className="w-4 text-center text-sm font-bold">{childCount}</span>
-                    <button type="button" onClick={() => setChildCount(childCount + 1)} className="text-xl opacity-50 hover:opacity-100">+</button>
-                  </div>
-                </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="rsvp-name" className="block text-base font-bold mb-2">성함</label>
+            <input
+              id="rsvp-name"
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="예) 홍길동"
+              required
+              className={FIELD}
+            />
+          </div>
 
-                {childCount > 0 && (
-                  <label className="flex items-center gap-2 bg-current/5 p-3 rounded-lg cursor-pointer">
-                    <input type="checkbox" checked={needBabyChair} onChange={e => setNeedBabyChair(e.target.checked)} className="w-4 h-4 accent-current" />
-                    <span className="text-sm font-bold opacity-80">아기의자가 필요해요</span>
-                  </label>
-                )}
-              </motion.div>
-            )}
-
-            <div className="flex gap-2 pt-4">
-              <button type="button" onClick={() => setIsOpen(false)} className="flex-1 py-3 rounded-xl border border-current/20 font-bold opacity-70">취소</button>
-              <button type="submit" disabled={isSubmitting || !name.trim()} className="flex-1 py-3 rounded-xl font-bold bg-current text-white dark:text-black opacity-90 hover:opacity-100 disabled:opacity-50" style={{ color: 'var(--bg-color)', backgroundColor: 'var(--text-color)' }}>
-                {isSubmitting ? '전달 중...' : '제출하기'}
-              </button>
+          <fieldset>
+            <legend className="block text-base font-bold mb-2">참석 여부</legend>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" aria-pressed={isAttending} onClick={() => setIsAttending(true)} className={choiceClass(isAttending)}>참여</button>
+              <button type="button" aria-pressed={!isAttending} onClick={() => setIsAttending(false)} className={choiceClass(!isAttending)}>미참여</button>
             </div>
-          </motion.form>
-        )}
-      </div>
+          </fieldset>
+
+          {isAttending && (
+            <div className="space-y-3">
+              <Stepper label="어른" value={adultCount} min={1} onChange={setAdultCount} />
+              <Stepper label="아이" value={childCount} min={0} onChange={setChildCount} />
+              {childCount > 0 && (
+                <label className="flex items-center gap-3 min-h-[52px] rounded-xl border border-line px-4 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={needBabyChair}
+                    onChange={e => setNeedBabyChair(e.target.checked)}
+                    className="w-5 h-5 accent-accent"
+                  />
+                  <span className="text-base font-medium">아기의자가 필요해요</span>
+                </label>
+              )}
+            </div>
+          )}
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isSubmitting || !name.trim()}
+              className="w-full min-h-[56px] rounded-xl bg-ink text-paper text-base font-bold disabled:opacity-40"
+            >
+              {isSubmitting ? '전달 중...' : '제출하기'}
+            </button>
+          </div>
+        </form>
+      </Reveal>
     </section>
   );
 }

@@ -4,13 +4,18 @@ import { useState } from 'react';
 import { useGuestbook } from '@/hooks/useGuestbook';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
+import SectionHeading from './SectionHeading';
+
+const FIELD = 'w-full px-4 rounded-xl border border-line bg-paper text-ink placeholder:text-mute/70';
+const PAGE_SIZE = 5;
 
 export default function Guestbook() {
   const { entries, loading } = useGuestbook();
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +30,7 @@ export default function Guestbook() {
       });
       setName('');
       setMessage('');
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, disableForReducedMotion: true });
       alert('타임캡슐이 안전하게 봉인되었습니다! 💌');
     } catch (error) {
       console.error(error);
@@ -36,73 +41,71 @@ export default function Guestbook() {
   };
 
   return (
-    <section id="guestbook" className="py-20 px-6 max-w-md mx-auto relative text-inherit">
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10"
-      >
-        <div className="inline-block bg-current opacity-10 text-current text-xs font-bold px-3 py-1 rounded-full mb-3 tracking-widest border border-current">
-          <span className="opacity-100">TIME CAPSULE</span>
-        </div>
-        <h2 className="text-2xl font-bold mb-3 tracking-wide">20살의 도현이에게</h2>
-        <p className="text-sm font-light opacity-80 leading-relaxed">
-          먼 훗날 성인이 된 도현이가 열어볼 수 있도록<br/>따뜻한 덕담과 편지를 남겨주세요.
-        </p>
-      </motion.div>
-
-      <form onSubmit={handleSubmit} className="bg-white/50 backdrop-blur-md p-5 rounded-2xl shadow-xl mb-8 border border-black/5 relative">
-        <div className="absolute -top-4 -right-2 text-4xl transform rotate-12">✉️</div>
-        <input 
-          type="text" 
-          placeholder="작성자 이름" 
-          value={name}
-          onChange={e => setName(e.target.value)}
-          maxLength={10}
-          className="w-full mb-3 p-3 bg-black/5 border-transparent rounded-xl focus:border-black/20 focus:bg-black/10 focus:ring-0 text-sm outline-none transition"
+    <section id="guestbook" className="py-[72px] px-6 max-w-md mx-auto">
+      <Reveal>
+        <SectionHeading
+          eyebrow="TIME CAPSULE"
+          title="20살의 도현이에게"
+          description="먼 훗날 성인이 된 도현이가 열어볼 수 있도록 따뜻한 덕담과 편지를 남겨주세요."
         />
-        <textarea 
-          placeholder="20년 후의 도현이에게 어떤 말을 해주고 싶나요?" 
-          value={message}
-          onChange={e => setMessage(e.target.value)}
-          rows={4}
-          maxLength={300}
-          className="w-full mb-4 p-3 bg-black/5 border-transparent rounded-xl focus:border-black/20 focus:bg-black/10 focus:ring-0 text-sm outline-none transition resize-none leading-relaxed"
-        />
-        <button 
-          type="submit" 
-          disabled={isSubmitting || !name.trim() || !message.trim()}
-          className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition disabled:opacity-50"
-        >
-          {isSubmitting ? '봉인 중...' : '타임캡슐 봉인하기'}
-        </button>
-      </form>
 
-      <div className="space-y-4 max-h-[400px] overflow-y-auto px-2 pb-4 scrollbar-hide">
+        <form onSubmit={handleSubmit} className="space-y-3 mb-12">
+          <input
+            type="text"
+            aria-label="작성자 이름"
+            placeholder="작성자 이름"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            maxLength={10}
+            className={`${FIELD} min-h-[52px]`}
+          />
+          <textarea
+            aria-label="편지 내용"
+            placeholder="20년 후의 도현이에게 어떤 말을 해주고 싶나요?"
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            rows={4}
+            maxLength={300}
+            className={`${FIELD} py-3 resize-none leading-relaxed`}
+          />
+          <button
+            type="submit"
+            disabled={isSubmitting || !name.trim() || !message.trim()}
+            className="w-full min-h-[56px] rounded-xl bg-ink text-paper text-base font-bold transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            {isSubmitting ? '봉인 중...' : '타임캡슐 봉인하기'}
+          </button>
+        </form>
+
         {loading ? (
-          <p className="text-center text-sm opacity-50">타임캡슐을 불러오는 중입니다...</p>
+          <p className="text-center text-base text-mute">타임캡슐을 불러오는 중입니다...</p>
+        ) : entries.length === 0 ? (
+          <p className="text-center text-base text-mute py-6">아직 봉인된 편지가 없습니다.</p>
         ) : (
-          entries.map((entry, idx) => (
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              key={entry.id} 
-              className="bg-white/50 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-black/5 relative overflow-hidden group"
-            >
-              <div className="flex justify-between items-end mb-3">
-                <span className="font-bold text-sm tracking-wide">{entry.name}</span>
-                <span className="text-[10px] opacity-50">{new Date(entry.createdAt).toLocaleDateString()}</span>
-              </div>
-              <p className="text-sm opacity-90 whitespace-pre-wrap leading-relaxed font-light">{entry.message}</p>
-            </motion.div>
-          ))
+          <>
+            <ul className="divide-y divide-line border-y border-line">
+              {entries.slice(0, visibleCount).map((entry) => (
+                <li key={entry.id} className="py-6">
+                  <div className="flex justify-between items-baseline mb-2">
+                    <span className="text-base font-bold">{entry.name}</span>
+                    <time className="text-sm text-mute">{new Date(entry.createdAt).toLocaleDateString()}</time>
+                  </div>
+                  <p className="text-[17px] whitespace-pre-wrap leading-[1.8]">{entry.message}</p>
+                </li>
+              ))}
+            </ul>
+            {entries.length > visibleCount && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
+                className="mt-4 w-full min-h-[52px] rounded-xl border border-line text-base font-medium text-ink hover:bg-paper-deep"
+              >
+                편지 더 보기 ({entries.length - visibleCount})
+              </button>
+            )}
+          </>
         )}
-        {entries.length === 0 && !loading && (
-          <p className="text-center text-sm opacity-50 py-10">아직 봉인된 편지가 없습니다.</p>
-        )}
-      </div>
+      </Reveal>
     </section>
   );
 }

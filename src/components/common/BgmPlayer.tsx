@@ -55,15 +55,12 @@ export default function BgmPlayer({ url }: { url?: string }) {
 
       {isReady && (
         <button
+          type="button"
           onClick={togglePlay}
-          className="fixed top-4 right-4 z-[999] w-10 h-10 bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-gray-100 flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
-          aria-label="Toggle BGM"
+          aria-pressed={isPlaying}
+          className="fixed top-4 right-4 z-[999] min-h-[44px] px-4 rounded-full bg-paper/95 backdrop-blur border border-line text-[15px] font-medium text-ink"
         >
-          {isPlaying ? (
-            <span className="text-xl animate-pulse">🎵</span>
-          ) : (
-            <span className="text-xl opacity-50 grayscale">🔇</span>
-          )}
+          {isPlaying ? '음악 끄기' : '음악 켜기'}
         </button>
       )}
     </>

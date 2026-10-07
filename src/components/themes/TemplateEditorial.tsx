@@ -5,129 +5,181 @@ import LocationBank from '@/components/common/LocationBank';
 import Gallery from '@/components/common/Gallery';
 import TmiSection from '@/components/common/TmiSection';
 import RsvpForm from '@/components/common/RsvpForm';
-import { formatKoreanDate } from '@/utils/dateFormatter';
-import { useState, useEffect } from 'react';
+import ShareButton from '@/components/common/ShareButton';
+import Reveal from '@/components/common/Reveal';
+import SectionHeading from '@/components/common/SectionHeading';
+import { formatKoreanDate, getDDay, getDateParts } from '@/utils/dateFormatter';
+
+function ContactRow({ role, name, phone }: { role: string; name: string; phone: string }) {
+  const btn =
+    'inline-flex items-center justify-center min-h-[44px] min-w-[64px] px-4 rounded-full border border-line text-[15px] font-medium text-ink hover:bg-paper-deep';
+  return (
+    <li className="flex items-center justify-between gap-4 py-5">
+      <div>
+        <p className="text-sm text-mute">{role}</p>
+        <p className="font-display text-xl font-semibold">{name}</p>
+      </div>
+      {phone && (
+        <div className="flex gap-2">
+          <a href={`tel:${phone}`} className={btn} aria-label={`${role} ${name}에게 전화하기`}>전화</a>
+          <a href={`sms:${phone}`} className={btn} aria-label={`${role} ${name}에게 문자 보내기`}>문자</a>
+        </div>
+      )}
+    </li>
+  );
+}
 
 export default function TemplateEditorial({ config }: { config: InvitationConfig }) {
-  const formattedDate = formatKoreanDate(config.date, config.time);
-
-  const [dDayStr, setDDayStr] = useState('');
-  useEffect(() => {
-    if (!config.date) return;
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const eventDate = new Date(config.date);
-    eventDate.setHours(0,0,0,0);
-    
-    const diff = eventDate.getTime() - today.getTime();
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    
-    if (days > 0) setDDayStr(`D-${days}`);
-    else if (days === 0) setDDayStr('D-DAY');
-    else setDDayStr(`D+${Math.abs(days)}`);
-  }, [config.date]);
+  const parts = getDateParts(config.date, config.time);
+  const dDay = getDDay(config.date);
+  const story = [...(config.scrollImages ?? [])].sort((a, b) => a.month - b.month);
 
   return (
-    <div className="font-serif bg-stone-50 text-stone-900 min-h-screen pb-20" style={{ '--bg-color': '#fafaf9', '--text-color': '#1c1917' } as React.CSSProperties}>
-      <header className="relative w-full h-screen flex flex-col items-center justify-end pb-24 overflow-hidden">
-        {config.mainCoverImage ? (
-          <img 
-            src={config.mainCoverImage} 
-            alt="Main" 
-            className="absolute inset-0 w-full h-full object-cover opacity-90 scale-105"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-stone-200" />
-        )}
-        
-        <div className="z-10 bg-white/80 p-8 backdrop-blur-sm text-center border border-stone-200 shadow-xl m-6 max-w-[80%]">
-          <h1 className="text-3xl font-bold tracking-widest mb-4">1ST BIRTHDAY</h1>
-          <p className="text-lg tracking-widest mb-2">{config.babyName}의 첫돌</p>
-          <p className="text-sm tracking-widest text-stone-600 mb-4">{formattedDate}</p>
-          {dDayStr && (
-            <div className="inline-block border border-stone-800 text-stone-800 px-4 py-1 text-sm tracking-widest font-bold">
-              {dDayStr}
-            </div>
+    <div className="bg-paper text-ink pb-24">
+      {/* 01. COVER — 사진과 정보를 분리: 사진 위에는 아무것도 올리지 않습니다 */}
+      <header>
+        <div className="relative w-full aspect-[4/5] overflow-hidden bg-paper-deep">
+          {config.mainCoverImage && (
+            <img
+              src={config.mainCoverImage}
+              alt={`${config.babyName}의 첫돌 사진`}
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: `50% ${config.coverFocusY ?? 30}%` }}
+            />
           )}
+        </div>
+
+        <div className="px-6 pt-12 pb-[72px] text-center">
+          <p className="text-sm font-medium tracking-[0.3em] text-accent">ONE YEAR OLD</p>
+          <h1 className="mt-4 font-display text-[36px] leading-tight font-semibold">
+            {config.babyName}의 첫돌
+          </h1>
+
+          <div className="mt-8">
+            {parts ? (
+              <>
+                <p className="font-display text-[26px] tracking-wide">
+                  {parts.ymd}{' '}
+                  <span className="text-base tracking-[0.2em] text-mute">{parts.weekdayEn}</span>
+                </p>
+                <p className="mt-1 text-lg">{parts.weekdayKo} {parts.timeKo}</p>
+              </>
+            ) : (
+              <p className="text-lg">{formatKoreanDate(config.date, config.time)}</p>
+            )}
+            {dDay && <p className="mt-4 text-sm font-medium tracking-[0.2em] text-accent">{dDay}</p>}
+          </div>
         </div>
       </header>
 
-      {/* 모시는 글 & 연락처 섹션 */}
-      <section className="py-20 px-6 bg-white text-center">
-        <h2 className="text-xl font-bold mb-10 tracking-widest text-stone-800">INVITATION</h2>
-        <p className="whitespace-pre-line text-sm leading-8 text-stone-600 mb-12">
-          {config.greetingMessage}
-        </p>
-        <div className="max-w-xs mx-auto space-y-4">
-          <div className="flex justify-between items-center border-b border-stone-200 pb-4">
-            <span className="text-stone-700 tracking-widest text-sm">FATHER {config.fatherName}</span>
-            <div className="flex gap-3">
-              <a href={`tel:${config.fatherPhone}`} className="text-stone-400 hover:text-stone-800 transition">📞</a>
-              <a href={`sms:${config.fatherPhone}`} className="text-stone-400 hover:text-stone-800 transition">✉️</a>
-            </div>
-          </div>
-          <div className="flex justify-between items-center pb-2">
-            <span className="text-stone-700 tracking-widest text-sm">MOTHER {config.motherName}</span>
-            <div className="flex gap-3">
-              <a href={`tel:${config.motherPhone}`} className="text-stone-400 hover:text-stone-800 transition">📞</a>
-              <a href={`sms:${config.motherPhone}`} className="text-stone-400 hover:text-stone-800 transition">✉️</a>
-            </div>
-          </div>
-        </div>
+      {/* 02. MESSAGE */}
+      <section id="message" className="px-6 pb-[72px]">
+        <Reveal className="max-w-md mx-auto">
+          <SectionHeading eyebrow="INVITATION" title="초대합니다" />
+          <p className="whitespace-pre-line text-center text-[17px] leading-[2] text-ink">
+            {config.greetingMessage}
+          </p>
+        </Reveal>
       </section>
 
-      <div className="bg-stone-50 border-t border-b border-stone-200">
-        <TmiSection config={config} />
-      </div>
-
-      <div className="bg-white">
-        <Gallery config={config} />
-      </div>
-
-      {/* 성장 타임라인 섹션 */}
-      {config.scrollImages && config.scrollImages.length > 0 && (
-        <section className="py-20 px-6 bg-stone-50 border-t border-stone-200">
-          <h2 className="text-2xl font-bold text-center mb-12 tracking-widest text-stone-800">
-            GROWTH STORY
-          </h2>
-          <div className="space-y-16">
-            {config.scrollImages.map((img, idx) => (
-              <div key={img.id} className={`flex flex-col items-center ${idx % 2 === 0 ? '' : 'md:flex-row-reverse'}`}>
-                <div className="w-full aspect-[4/5] overflow-hidden mb-4 bg-stone-100 border p-2 shadow-sm">
-                  <img src={img.url} alt={img.caption} className="w-full h-full object-cover" />
-                </div>
-                <div className="text-center w-full">
-                  <p className="text-stone-500 font-bold mb-1 tracking-widest">{img.month} MONTHS</p>
-                  <p className="text-stone-700 font-medium">{img.caption}</p>
-                </div>
-              </div>
+      {/* 03. OUR STORY — 성장 타임라인 사진이 등록된 경우에만 표시 */}
+      {config.useStory !== false && story.length > 0 && (
+        <section id="story" className="py-[72px] px-6 bg-paper-deep">
+          <Reveal className="max-w-md mx-auto">
+            <SectionHeading eyebrow="OUR STORY" title={`${config.babyName}의 첫 1년`} />
+          </Reveal>
+          <ol className="max-w-md mx-auto space-y-14">
+            {story.map((img) => (
+              <li key={img.id}>
+                <Reveal>
+                  <div className="aspect-[4/5] overflow-hidden bg-paper">
+                    <img
+                      src={img.url}
+                      alt={img.caption || `${img.month}개월의 ${config.babyName}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                      style={{ objectPosition: '50% 30%' }}
+                    />
+                  </div>
+                  {img.month > 0 && (
+                    <p className="mt-5 text-sm font-medium tracking-[0.22em] text-accent">{img.month}개월</p>
+                  )}
+                  {img.caption && <p className="mt-2 text-[17px] leading-[1.8]">{img.caption}</p>}
+                </Reveal>
+              </li>
             ))}
-          </div>
+            <li>
+              <Reveal className="text-center pt-6">
+                <p className="text-sm font-medium tracking-[0.22em] text-accent">TODAY</p>
+                <p className="mt-2 font-display text-xl">그리고 어느덧 첫 번째 생일</p>
+              </Reveal>
+            </li>
+          </ol>
         </section>
       )}
 
-      {/* 오시는 길 섹션 */}
-      <div className="bg-stone-100 border-t border-stone-200">
-        <LocationBank config={config} />
-      </div>
+      {/* 04. TMI */}
+      {config.useTmi !== false && <TmiSection config={config} />}
 
-      <div className="bg-white border-b border-stone-200">
-        <RsvpForm config={config} />
-      </div>
+      {/* 05. GALLERY */}
+      {config.useGallery !== false && <Gallery config={config} />}
 
-      {/* 퀴즈 이벤트 섹션 */}
-      <div className="bg-stone-50 border-b border-stone-200">
-        <Quiz config={config} />
-      </div>
+      {/* 06. THE DAY — 날짜·시간·장소를 한눈에 */}
+      <section id="day" className="py-[72px] px-6 bg-paper-deep">
+        <Reveal className="max-w-md mx-auto">
+          <SectionHeading eyebrow="THE DAY" title="행사 안내" />
+          <dl className="space-y-6 text-center">
+            <div>
+              <dt className="text-sm text-mute mb-1">일시</dt>
+              <dd className="text-xl font-medium leading-snug">
+                {formatKoreanDate(config.date, '')}
+                <br />
+                {parts?.timeKo}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm text-mute mb-1">장소</dt>
+              <dd className="text-xl font-medium leading-snug">{config.locationName}</dd>
+            </div>
+            <div>
+              <dt className="text-sm text-mute mb-1">주소</dt>
+              <dd className="text-lg leading-snug">{config.locationAddress}</dd>
+            </div>
+          </dl>
+        </Reveal>
+      </section>
 
-      {/* 방명록 섹션 */}
-      <div className="bg-white">
-        <Guestbook />
-      </div>
+      {/* 07~08. LOCATION / PARKING (공유 버튼은 마지막 THANK YOU 에서) */}
+      <LocationBank config={config} showShare={false} />
 
-      {/* 푸터 */}
-      <footer className="py-10 text-center bg-stone-900 text-stone-400 text-xs tracking-widest">
-        <p>{config.babyName}의 첫돌을 축하해 주셔서 감사합니다</p>
+      {/* 09. FAMILY */}
+      <section id="family" className="pb-[72px] px-6 max-w-md mx-auto">
+        <Reveal>
+          <SectionHeading eyebrow="FAMILY" title={`${config.babyName}의 가족`} />
+          <ul className="divide-y divide-line border-y border-line">
+            <ContactRow role="아빠" name={config.fatherName} phone={config.fatherPhone} />
+            <ContactRow role="엄마" name={config.motherName} phone={config.motherPhone} />
+          </ul>
+        </Reveal>
+      </section>
+
+      {/* 10. RSVP / EVENT / GUESTBOOK */}
+      <RsvpForm config={config} />
+      {config.useQuiz !== false && <Quiz config={config} />}
+      {config.useGuestbook !== false && <Guestbook />}
+
+      {/* 11. THANK YOU */}
+      <footer className="py-[72px] px-6 bg-paper-deep text-center">
+        <Reveal className="max-w-md mx-auto">
+          <SectionHeading
+            eyebrow="THANK YOU"
+            title="감사합니다"
+            description={`${config.babyName}의 첫돌을 축하해 주셔서 감사합니다`}
+          />
+          <ShareButton config={config} />
+        </Reveal>
       </footer>
     </div>
   );

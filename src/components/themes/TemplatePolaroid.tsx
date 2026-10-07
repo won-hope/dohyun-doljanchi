@@ -84,11 +84,11 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
       </section>
 
       <div className="text-pink-600">
-        <TmiSection config={config} />
+        {config.useTmi !== false && <TmiSection config={config} />}
       </div>
 
       <div className="bg-white/40">
-        <Gallery config={config} />
+        {config.useGallery !== false && <Gallery config={config} />}
       </div>
 
       {config.scrollImages && config.scrollImages.length > 0 && (
@@ -124,11 +124,11 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
       </div>
 
       <div className="bg-baby-pink/30 [&_.bg-white]:bg-white/80">
-        <Quiz config={config} />
+        {config.useQuiz !== false && <Quiz config={config} />}
       </div>
       
       <div className="bg-white/50 text-gray-800">
-        <Guestbook />
+        {config.useGuestbook !== false && <Guestbook />}
       </div>
 
       <footer className="py-12 text-center text-gray-400 text-sm">

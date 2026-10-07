@@ -112,12 +112,12 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
 
       {/* TMI */}
       <div className="bg-emerald-50 text-gray-900 py-10" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
-        <TmiSection config={config} />
+        {config.useTmi !== false && <TmiSection config={config} />}
       </div>
 
       {/* 갤러리 */}
       <div className="bg-white text-gray-900 py-10">
-        <Gallery config={config} />
+        {config.useGallery !== false && <Gallery config={config} />}
       </div>
 
       {/* 3. 타임라인 */}
@@ -158,7 +158,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
 
       {/* 5. 퀴즈 이벤트 */}
       <div className="bg-white py-10">
-        <Quiz config={config} />
+        {config.useQuiz !== false && <Quiz config={config} />}
       </div>
 
       {/* 6. 방명록 */}
@@ -167,7 +167,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
           <p className="text-emerald-500 text-sm mb-1">GUESTBOOK</p>
           <p className="text-gray-700 text-lg">도현이에게 축하 인사를 남겨주세요 💌</p>
         </div>
-        <Guestbook />
+        {config.useGuestbook !== false && <Guestbook />}
       </div>
 
       <footer className="py-20 text-center bg-white text-gray-400 text-sm">

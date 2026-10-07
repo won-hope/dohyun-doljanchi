@@ -6,19 +6,49 @@ import { storage } from '@/lib/firebase';
 import { ThemeType, ScrollImage } from '@/types';
 import imageCompression from 'browser-image-compression';
 
+
+function SectionToggle({ checked, onChange, label }: { checked: boolean, onChange: (v: boolean) => void, label?: string }) {
+  return (
+    <div 
+      className="flex items-center gap-2" 
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} // Prevent details from toggling
+    >
+      {label && <span className="text-xs text-gray-500 font-normal">{label}</span>}
+      <button 
+        type="button" 
+        role="switch" 
+        aria-checked={checked} 
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(!checked); }}
+        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${checked ? 'bg-blue-500' : 'bg-gray-200'}`}
+      >
+        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${checked ? 'translate-x-4.5' : 'translate-x-1'}`} style={{ transform: checked ? 'translateX(18px)' : 'translateX(4px)' }} />
+      </button>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { config, loading, updateConfig } = useInvitationData();
   const [uploadingMain, setUploadingMain] = useState(false);
   const [uploadingScroll, setUploadingScroll] = useState(false);
   
   const [newScrollMonth, setNewScrollMonth] = useState<number | ''>('');
+  const [focusY, setFocusY] = useState<number | null>(null);
   const [newScrollCaption, setNewScrollCaption] = useState('');
 
   if (loading) return <div className="text-center py-10 animate-pulse">설정 불러오는 중...</div>;
 
   const handleThemeChange = async (theme: ThemeType) => {
     const success = await updateConfig({ selectedTemplate: theme });
-    if (success) alert(`${theme === 'EDITORIAL' ? '에디토리얼' : '폴라로이드'} 테마로 변경되었습니다.`);
+    if (success) {
+      const names: Record<ThemeType, string> = {
+        BLUE_SNAKE: '청사 (푸른 뱀띠)',
+        EDITORIAL: '에디토리얼',
+        POLAROID: '폴라로이드',
+        CINEMATIC: '파스텔',
+      };
+      alert(`${names[theme] || theme} 테마로 변경되었습니다.`);
+    }
   };
 
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,9 +133,25 @@ export default function Dashboard() {
     <div className="space-y-10">
       <GeneralSettingsManager config={config} updateConfig={updateConfig} />
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">1. 디자인 테마 선택</h2>
-        <div className="grid grid-cols-3 gap-3">
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    1. 디자인 테마 선택
+    <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+  </summary>
+  <div className="mt-5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button onClick={() => handleThemeChange('BLUE_SNAKE')} className={`p-4 border rounded-xl flex flex-col items-center transition ${config.selectedTemplate === 'BLUE_SNAKE' ? 'border-[#246973] bg-[#EBF4F2] ring-2 ring-[#246973] ring-opacity-30' : 'border-gray-200 hover:bg-gray-50'}`}>
+            <div className="w-16 h-24 bg-[#F6FAF9] border border-[#D0DFDC] mb-3 flex flex-col items-center justify-center p-1 shadow-sm relative overflow-hidden">
+              <div className="w-6 h-6 rounded-full bg-[#EBF4F2] border border-[#246973]/30 flex items-center justify-center text-[10px] text-[#246973] font-bold mb-1">
+                🐍
+              </div>
+              <div className="w-10 h-0.5 bg-[#246973] mb-0.5"></div>
+              <div className="w-6 h-0.5 bg-[#D0DFDC]"></div>
+            </div>
+            <span className="font-bold text-gray-800 text-sm">청사 (푸른 뱀띠)</span>
+            <span className="text-[10px] text-gray-500 mt-1 text-center">단아한 옥빛 & 쪽빛</span>
+          </button>
+
           <button onClick={() => handleThemeChange('EDITORIAL')} className={`p-4 border rounded-xl flex flex-col items-center transition ${config.selectedTemplate === 'EDITORIAL' ? 'border-gray-800 bg-gray-50 ring-2 ring-gray-800 ring-opacity-20' : 'border-gray-200 hover:bg-gray-50'}`}>
             <div className="w-16 h-24 bg-stone-100 border border-stone-200 mb-3 flex flex-col items-center justify-center p-1 shadow-sm relative overflow-hidden">
               <div className="w-full aspect-[4/5] bg-stone-300 mb-1"></div>
@@ -135,27 +181,73 @@ export default function Dashboard() {
             <span className="text-[10px] text-gray-500 mt-1 text-center">상큼 발랄 민트톤</span>
           </button>
         </div>
-      </section>
+        </div>
+</details>
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">2. 메인 커버 사진</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    2. 메인 커버 사진
+    <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+  </summary>
+  <div className="mt-5">
         <div className="flex flex-col space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
           {config.mainCoverImage ? (
-            <div className="relative w-full aspect-square overflow-hidden rounded-lg shadow-sm">
-              <img src={config.mainCoverImage} alt="Main Cover" className="object-cover w-full h-full" />
+            <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg shadow-sm">
+              <img
+                src={config.mainCoverImage}
+                alt="Main Cover"
+                className="object-cover w-full h-full"
+                style={{ objectPosition: `50% ${focusY ?? config.coverFocusY ?? 30}%` }}
+              />
             </div>
           ) : (
-            <div className="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">이미지 없음</div>
+            <div className="w-full aspect-[4/5] bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">이미지 없음</div>
+          )}
+          {config.mainCoverImage && (
+            <div className="space-y-2">
+              <label className="block text-xs font-bold text-gray-600">
+                얼굴 위치 (초대장 첫 화면에서 잘리는 부분 조정)
+              </label>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={focusY ?? config.coverFocusY ?? 30}
+                onChange={e => setFocusY(Number(e.target.value))}
+                className="w-full"
+                aria-label="커버 사진 세로 위치"
+              />
+              <div className="flex justify-between text-[11px] text-gray-400"><span>사진 위쪽</span><span>사진 아래쪽</span></div>
+              <button
+                onClick={async () => {
+                  if (focusY === null) return;
+                  const ok = await updateConfig({ coverFocusY: focusY });
+                  if (ok) alert('커버 사진 위치가 저장되었습니다.');
+                }}
+                disabled={focusY === null}
+                className="w-full bg-gray-800 text-white text-sm font-bold py-2 rounded-lg disabled:opacity-40"
+              >
+                위치 저장
+              </button>
+            </div>
           )}
           <label className="flex flex-col items-center justify-center w-full h-12 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50">
             <span className="text-sm text-gray-500 font-medium">{uploadingMain ? '업로드 중입니다...' : '새로운 메인 사진 업로드'}</span>
             <input type="file" accept="image/*" onChange={handleMainImageUpload} disabled={uploadingMain} className="hidden" />
           </label>
         </div>
-      </section>
+        </div>
+</details>
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">3. 성장 타임라인 사진</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    3. 성장 타임라인 사진
+    <div className="flex items-center gap-3">
+      <SectionToggle checked={config.useStory !== false} onChange={(v) => updateConfig({ useStory: v })} label={config.useStory !== false ? '적용중' : '미적용'} />
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+    </div>
+  </summary>
+  <div className="mt-5">
         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4">
           
           <div className="space-y-3">
@@ -205,33 +297,74 @@ export default function Dashboard() {
           </div>
 
         </div>
-      </section>
+        </div>
+</details>
 
       
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">2-2. 갤러리 (스튜디오 사진) 관리</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    2-2. 갤러리 (스튜디오 사진) 관리
+    <div className="flex items-center gap-3">
+      <SectionToggle checked={config.useGallery !== false} onChange={(v) => updateConfig({ useGallery: v })} label={config.useGallery !== false ? '적용중' : '미적용'} />
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+    </div>
+  </summary>
+  <div className="mt-5">
         <GalleryManager config={config} updateConfig={updateConfig} />
-      </section>
+        </div>
+</details>
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">3-2. 참석자(RSVP) 통계 대시보드</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    3-2. 참석자(RSVP) 통계 대시보드
+    <div className="flex items-center gap-3">
+      <SectionToggle checked={config.useRsvp !== false} onChange={(v) => updateConfig({ useRsvp: v })} label={config.useRsvp !== false ? '적용중' : '미적용'} />
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+    </div>
+  </summary>
+  <div className="mt-5">
         <RsvpManager config={config} updateConfig={updateConfig} />
-      </section>
+        </div>
+</details>
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">4. 깜짝 퀴즈 설정 & 참여자</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    4. 깜짝 퀴즈 설정 & 참여자
+    <div className="flex items-center gap-3">
+      <SectionToggle checked={config.useQuiz !== false} onChange={(v) => updateConfig({ useQuiz: v })} label={config.useQuiz !== false ? '적용중' : '미적용'} />
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+    </div>
+  </summary>
+  <div className="mt-5">
         <QuizManager config={config} updateConfig={updateConfig} />
-      </section>
+        </div>
+</details>
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">4-2. 아이 TMI (인터뷰) 설정</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    4-2. 아이 TMI (인터뷰) 설정
+    <div className="flex items-center gap-3">
+      <SectionToggle checked={config.useTmi !== false} onChange={(v) => updateConfig({ useTmi: v })} label={config.useTmi !== false ? '적용중' : '미적용'} />
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+    </div>
+  </summary>
+  <div className="mt-5">
         <TmiManager config={config} updateConfig={updateConfig} />
-      </section>
+        </div>
+</details>
 
-      <section>
-        <h2 className="text-lg font-bold mb-4 text-gray-800">5. 타임캡슐(방명록) 관리</h2>
+      <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
+    5. 타임캡슐(방명록) 관리
+    <div className="flex items-center gap-3">
+      <SectionToggle checked={config.useGuestbook !== false} onChange={(v) => updateConfig({ useGuestbook: v })} label={config.useGuestbook !== false ? '적용중' : '미적용'} />
+      <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+    </div>
+  </summary>
+  <div className="mt-5">
         <GuestbookManager />
-      </section>
+        </div>
+</details>
     </div>
   );
 }
@@ -414,6 +547,7 @@ function GeneralSettingsManager({ config, updateConfig }: { config: any, updateC
       locationName: formData.locationName,
       locationAddress: formData.locationAddress,
       locationAddressDetail: formData.locationAddressDetail,
+      parkingInfo: formData.parkingInfo || '',
       greetingMessage: formData.greetingMessage,
       fatherName: formData.fatherName,
       fatherPhone: formData.fatherPhone,
@@ -439,8 +573,12 @@ function GeneralSettingsManager({ config, updateConfig }: { config: any, updateC
       </div>
 
       <div className="space-y-8">
-        <section>
-          <h3 className="text-sm font-bold mb-3 text-gray-700">📌 아기 정보 & 행사 일시</h3>
+        <details className="group bg-gray-50 p-4 rounded-xl border border-gray-200 mb-3 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-700 text-sm outline-none">
+    📌 아기 정보 & 행사 일시
+    <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+  </summary>
+  <div className="mt-4">
           <div className="grid gap-3">
             <div>
               <label className="block text-xs font-bold text-gray-600 mb-1">아기 이름</label>
@@ -474,10 +612,15 @@ function GeneralSettingsManager({ config, updateConfig }: { config: any, updateC
               </div>
             </div>
           </div>
-        </section>
+          </div>
+</details>
 
-        <section>
-          <h3 className="text-sm font-bold mb-3 text-gray-700">📍 오시는 길 (장소)</h3>
+        <details className="group bg-gray-50 p-4 rounded-xl border border-gray-200 mb-3 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-700 text-sm outline-none">
+    📍 오시는 길 (장소)
+    <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+  </summary>
+  <div className="mt-4">
           <div className="grid gap-3">
             <div>
               <label className="block text-xs font-bold text-gray-600 mb-1">장소명</label>
@@ -491,11 +634,20 @@ function GeneralSettingsManager({ config, updateConfig }: { config: any, updateC
               <label className="block text-xs font-bold text-gray-600 mb-1">상세 주소 (지번 등)</label>
               <input type="text" value={formData.locationAddressDetail || ''} onChange={e => handleChange('locationAddressDetail', e.target.value)} className="w-full p-2 border rounded text-sm outline-none focus:ring-2 focus:ring-blue-400" />
             </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-600 mb-1">주차 안내 (비워두면 초대장에 표시되지 않아요)</label>
+              <textarea value={formData.parkingInfo || ''} onChange={e => handleChange('parkingInfo', e.target.value)} rows={3} placeholder="예) 건물 지하주차장 이용 (2시간 무료)" className="w-full p-2 border rounded text-sm outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
+            </div>
           </div>
-        </section>
+          </div>
+</details>
 
-        <section>
-          <h3 className="text-sm font-bold mb-3 text-gray-700">✉️ 모시는 글 & 부모님 연락처</h3>
+        <details className="group bg-gray-50 p-4 rounded-xl border border-gray-200 mb-3 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-700 text-sm outline-none">
+    ✉️ 모시는 글 & 부모님 연락처
+    <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+  </summary>
+  <div className="mt-4">
           <div className="grid gap-3">
             <div>
               <label className="block text-xs font-bold text-gray-600 mb-1">초대하는 글 (인사말)</label>
@@ -527,10 +679,15 @@ function GeneralSettingsManager({ config, updateConfig }: { config: any, updateC
               </div>
             </div>
           </div>
-        </section>
+          </div>
+</details>
 
-        <section>
-          <h3 className="text-sm font-bold mb-3 text-gray-700">🎵 배경음악(BGM) 설정</h3>
+        <details className="group bg-gray-50 p-4 rounded-xl border border-gray-200 mb-3 [&_summary::-webkit-details-marker]:hidden">
+  <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-700 text-sm outline-none">
+    🎵 배경음악(BGM) 설정
+    <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+  </summary>
+  <div className="mt-4">
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-1">유튜브 링크 (선택사항)</label>
             <input 
@@ -542,7 +699,8 @@ function GeneralSettingsManager({ config, updateConfig }: { config: any, updateC
             />
             <p className="text-xs text-gray-500 mt-2">유튜브 링크를 넣으면 초대장 우측 상단에 재생 버튼이 생깁니다.</p>
           </div>
-        </section>
+          </div>
+</details>
       </div>
 
       <button 

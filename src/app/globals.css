@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Warm Editorial 팔레트 (rgb 채널) */
+  --paper: 250 247 242;      /* Warm White / Ivory  #FAF7F2 */
+  --paper-deep: 243 238 230; /* 구분용 한 톤 진한 아이보리 #F3EEE6 */
+  --ink: 43 39 36;           /* Deep Charcoal       #2B2724 */
+  --mute: 111 103 96;        /* Warm Gray (본문 보조) #6F6760 — 아이보리 위 대비 5.2:1 */
+  --line: 224 217 207;       /* Soft Gray 라인      #E0D9CF */
+  --accent: 92 97 80;        /* Muted Olive         #5C6150 — 대비 6:1 */
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: rgb(var(--paper-deep));
+}
+
+body {
+  color: rgb(var(--ink));
+  /* 한국어는 단어 단위로 줄바꿈해야 읽기 편합니다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS 는 16px 미만 입력창에 포커스하면 화면을 자동 확대합니다 */
+input, textarea, select {
+  font-size: 16px;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,105 +1,86 @@
 'use client';
+import { useState } from 'react';
 import { InvitationConfig } from '@/types';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
+import SectionHeading from './SectionHeading';
+import ShareButton from './ShareButton';
 
-export default function LocationBank({ config }: { config: InvitationConfig }) {
-  const handleKakaoShare = () => {
-    if (typeof window !== 'undefined' && (window as any).Kakao) {
-      const kakao = (window as any).Kakao;
-      if (!kakao.isInitialized()) {
-        alert('카카오톡 공유가 초기화되지 않았습니다. (API KEY 필요)');
-        return;
-      }
-      kakao.Share.sendDefault({
-        objectType: 'feed',
-        content: {
-          title: `${config.babyName}의 첫돌에 초대합니다!`,
-          description: `일시: ${config.date} ${config.time}\n장소: ${config.locationName}`,
-          imageUrl: config.mainCoverImage || 'https://cdn-icons-png.flaticon.com/512/3855/3855907.png',
-          link: {
-            mobileWebUrl: 'https://won-hope.github.io/dohyun-doljanchi/',
-            webUrl: 'https://won-hope.github.io/dohyun-doljanchi/',
-          },
-        },
-        buttons: [
-          {
-            title: '초대장 보기',
-            link: {
-              mobileWebUrl: 'https://won-hope.github.io/dohyun-doljanchi/',
-              webUrl: 'https://won-hope.github.io/dohyun-doljanchi/',
-            },
-          },
-        ],
-      });
-    } else {
-      alert('카카오톡 공유 기능을 지원하지 않는 환경입니다.');
-    }
-  };
+const MAP_BUTTON =
+  'flex items-center justify-center min-h-[52px] rounded-xl border border-line bg-paper text-base font-medium text-ink transition-colors hover:bg-paper-deep active:bg-paper-deep';
+
+export default function LocationBank({
+  config,
+  showShare = true,
+}: {
+  config: InvitationConfig;
+  /** 공유 버튼을 다른 곳(마무리 섹션)에 둘 때 false */
+  showShare?: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
 
   const address = config.locationAddress || '강원도 원주시';
   const locationName = config.locationName || '고궁한정식';
-  const mapSearchQuery = encodeURIComponent(`${address.split(' ')[0]} ${locationName}`);
+  // 시/도 + 시/군 까지만 앞에 붙여 검색 정확도를 높입니다.
+  const mapSearchQuery = encodeURIComponent(`${address.split(' ').slice(0, 2).join(' ')} ${locationName}`);
 
   const mapLinks = {
     naver: `https://m.map.naver.com/search2/search.naver?query=${mapSearchQuery}`,
     kakao: `https://map.kakao.com/link/search/${mapSearchQuery}`,
-    tmap: `tmap://search?name=${mapSearchQuery}`
+    tmap: `tmap://search?name=${mapSearchQuery}`,
+  };
+
+  const copyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert(`주소: ${address}`);
+    }
   };
 
   return (
-    <section id="location" className="py-20 px-6 max-w-md mx-auto">
-      {/* 오시는 길 */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10"
-      >
-        <h2 className="text-2xl font-bold mb-3 tracking-wide text-gray-800">LOCATION</h2>
-        <p className="text-xl font-bold text-gray-800 mb-2">{config.locationName}</p>
-        <p className="text-sm text-gray-600 mb-1">{config.locationAddress}</p>
-        {config.locationAddressDetail && <p className="text-xs text-gray-500 mb-8">{config.locationAddressDetail}</p>}
+    <section id="location" className="py-[72px] px-6 max-w-md mx-auto">
+      <Reveal>
+        <SectionHeading eyebrow="LOCATION" title="오시는 길" />
 
-        {/* 길찾기 버튼들 */}
-        <div className="flex justify-center gap-3 mb-10">
-          <a
-            href={mapLinks.naver}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 bg-[#03C75A] text-white py-3 rounded-xl font-bold shadow-sm hover:opacity-90 transition text-sm flex flex-col items-center justify-center gap-1"
-          >
+        <div className="text-center mb-8">
+          <p className="font-display text-2xl font-semibold text-ink mb-3">{config.locationName}</p>
+          <p className="text-lg leading-relaxed text-ink">{config.locationAddress}</p>
+          {config.locationAddressDetail && (
+            <p className="mt-1 text-base text-mute">{config.locationAddressDetail}</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-2">
+          <a href={mapLinks.naver} target="_blank" rel="noopener noreferrer" className={MAP_BUTTON}>
             네이버지도
           </a>
-          <a
-            href={mapLinks.kakao}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 bg-[#FEE500] text-[#191919] py-3 rounded-xl font-bold shadow-sm hover:opacity-90 transition text-sm flex flex-col items-center justify-center gap-1"
-          >
+          <a href={mapLinks.kakao} target="_blank" rel="noopener noreferrer" className={MAP_BUTTON}>
             카카오맵
           </a>
-          <a
-            href={mapLinks.tmap}
-            className="flex-1 bg-[#000000] text-white py-3 rounded-xl font-bold shadow-sm hover:opacity-90 transition text-sm flex flex-col items-center justify-center gap-1"
-          >
+          <a href={mapLinks.tmap} className={MAP_BUTTON}>
             티맵
           </a>
         </div>
-      </motion.div>
-
-      {/* 공유하기 버튼 */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-      >
-        <button
-          onClick={handleKakaoShare}
-          className="w-full bg-[#FEE500] text-[#191919] font-bold py-4 rounded-2xl shadow-sm hover:bg-[#F4DC00] transition flex justify-center items-center gap-2"
-        >
-          카카오톡으로 초대장 공유하기
+        <button type="button" onClick={copyAddress} className={`${MAP_BUTTON} w-full`} aria-live="polite">
+          {copied ? '주소가 복사되었습니다' : '주소 복사하기'}
         </button>
-      </motion.div>
+
+        {config.parkingInfo?.trim() && (
+          <div id="parking" className="mt-12 pt-10 border-t border-line text-center">
+            <p className="text-sm font-medium tracking-[0.22em] text-accent mb-3">PARKING</p>
+            <h3 className="font-display text-2xl font-semibold text-ink mb-4">주차 안내</h3>
+            <p className="whitespace-pre-line text-[17px] leading-[1.9] text-ink">{config.parkingInfo}</p>
+          </div>
+        )}
+
+        {showShare && (
+          <div className="mt-12">
+            <ShareButton config={config} />
+          </div>
+        )}
+      </Reveal>
     </section>
   );
 }
