@@ -89,16 +89,57 @@ export default function RsvpForm({ config }: { config: InvitationConfig }) {
     }`;
 
   if (isSubmitted) {
+    
     return (
       <section id="rsvp" className="py-[72px] px-6 max-w-md mx-auto text-center">
         <Reveal>
-          <div className="p-8 rounded-2xl bg-paper-deep border border-line">
-            <p className="text-xl font-display font-bold mb-2">감사합니다!</p>
-            <p className="text-mute">참석 여부가 소중히 전달되었습니다.</p>
+          <div className="p-1 mb-8 rounded-3xl bg-gradient-to-br from-yellow-200 via-pink-200 to-blue-200 shadow-xl overflow-hidden relative">
+            <div className="bg-paper rounded-[20px] p-6 text-center border border-white/50 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-300 to-blue-300"></div>
+              
+              <div className="flex justify-between items-center mb-6 border-b border-dashed border-gray-300 pb-4">
+                <span className="text-xs font-bold text-gray-400 tracking-widest">BOARDING PASS</span>
+                <span className="text-xs font-bold text-gray-400 tracking-widest">VIP GUEST</span>
+              </div>
+              
+              <p className="text-xl font-display font-black text-gray-800 mb-1">{config.babyName}의 첫 생일파티</p>
+              <p className="text-sm font-bold text-pink-500 mb-8">{name} 님, 환영합니다!</p>
+              
+              <div className="grid grid-cols-2 gap-4 text-left mb-6">
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400">DATE</p>
+                  <p className="text-sm font-bold text-gray-700">{config.date.replace(/-/g, '.')}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400">TIME</p>
+                  <p className="text-sm font-bold text-gray-700">{config.time}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] font-bold text-gray-400">LOCATION</p>
+                  <p className="text-sm font-bold text-gray-700">{config.locationName}</p>
+                </div>
+              </div>
+              
+              <div className="mt-8 flex justify-center opacity-80">
+                {/* Barcode mock */}
+                <div className="h-10 w-full flex justify-between gap-[2px]">
+                  {Array.from({length: 40}).map((_, i) => (
+                    <div key={i} className="bg-gray-800 h-full" style={{ width: Math.random() > 0.5 ? '2px' : '4px', opacity: Math.random() * 0.5 + 0.5 }}></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="absolute -left-3 top-1/2 w-6 h-6 bg-paper-deep rounded-full transform -translate-y-1/2"></div>
+            <div className="absolute -right-3 top-1/2 w-6 h-6 bg-paper-deep rounded-full transform -translate-y-1/2"></div>
           </div>
+          
+          <p className="text-lg font-bold text-gray-800 mb-2">참석 여부가 전달되었습니다!</p>
+          <p className="text-sm text-gray-500">당일 발급된 VIP 티켓을 지참해 주세요 💛</p>
         </Reveal>
       </section>
     );
+
   }
 
   return (

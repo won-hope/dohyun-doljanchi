@@ -31,6 +31,8 @@ const DEFAULT_CONFIG: InvitationConfig = {
     { id: '1', question: '도현이의 태몽은?', answer: '커다란 황금돼지가 품에 안기는 꿈이었어요!' },
     { id: '2', question: '가장 좋아하는 것은?', answer: '아빠 얼굴 보고 꺄르르 웃기' }
   ],
+  eventMode: 'INVITATION',
+  audioGreetingUrl: '',
   useStory: true,
   useGallery: true,
   useTmi: true,

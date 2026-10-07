@@ -117,13 +117,27 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
             The Year of Blue Snake · First Birthday
           </p>
 
-          <h1 className="mt-4 font-display text-[36px] leading-tight font-semibold tracking-tight">
-            {config.babyName}의 첫돌
-          </h1>
-
-          <p className="mt-2 text-base text-mute font-medium">
-            푸른 뱀의 맑은 지혜와 온화함을 품은 첫 번째 생일
-          </p>
+          {config.eventMode === 'THANK_YOU' ? (
+            <>
+              <h1 className="mt-4 font-display text-[32px] leading-tight font-semibold tracking-tight">
+                함께해 주셔서<br/>감사합니다
+              </h1>
+              <p className="mt-4 text-base text-mute font-medium leading-relaxed">
+                바쁘신 와중에도 {config.babyName}의 첫 생일을<br/>
+                축하해 주셔서 진심으로 감사드립니다.
+              </p>
+              <AudioGreeting url={config.audioGreetingUrl || ''} />
+            </>
+          ) : (
+            <>
+              <h1 className="mt-4 font-display text-[36px] leading-tight font-semibold tracking-tight">
+                {config.babyName}의 첫돌
+              </h1>
+              <p className="mt-2 text-base text-mute font-medium">
+                푸른 뱀의 맑은 지혜와 온화함을 품은 첫 번째 생일
+              </p>
+            </>
+          )}
 
           <div className="mt-8 pt-6 border-t border-line/60">
             {parts ? (
@@ -244,6 +258,8 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
       {/* 05. GALLERY */}
       {config.useGallery !== false && <Gallery config={config} />}
 
+      {config.eventMode !== 'THANK_YOU' && (
+      <>
       {/* 06. THE DAY — 행사 안내 */}
       <section id="day" className="py-[72px] px-6 bg-paper-deep border-y border-line/60">
         <Reveal className="max-w-md mx-auto">
@@ -294,6 +310,8 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
       {/* 10. RSVP / QUIZ / GUESTBOOK */}
       <RsvpForm config={config} />
       {config.useQuiz !== false && <Quiz config={config} />}
+      </>
+      )}
       {config.useGuestbook !== false && <Guestbook />}
 
       {/* 11. THANK YOU & SHARE */}

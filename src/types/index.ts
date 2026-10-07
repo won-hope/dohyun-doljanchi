@@ -47,8 +47,10 @@ export interface InvitationConfig {
   quizAnswerIndex: number;
 
   bgmUrl?: string;
+  audioGreetingUrl?: string;
   
   // Section Toggles
+  eventMode?: 'INVITATION' | 'THANK_YOU';
   useStory?: boolean;
   useGallery?: boolean;
   useTmi?: boolean;
