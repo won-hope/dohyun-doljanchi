@@ -35,7 +35,7 @@ export default function Gallery({ config }: { config: InvitationConfig }) {
   let photoNo = 0;
 
   return (
-    <section id="gallery" className="py-[72px] px-5">
+    <section id="gallery" className="py-12 px-5">
       <Reveal>
         <SectionHeading eyebrow="GALLERY" title="사진첩" description={`${config.babyName}의 소중한 순간들`} />
       </Reveal>

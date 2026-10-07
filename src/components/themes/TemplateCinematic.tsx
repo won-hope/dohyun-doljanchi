@@ -31,10 +31,10 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
   }, [config.date]);
 
   return (
-    <div className="font-jua bg-emerald-50 text-emerald-900 min-h-screen overflow-x-hidden pb-20">
+    <div className="font-jua bg-emerald-50 text-emerald-900 min-min-h-[85vh] pb-12 overflow-x-hidden pb-20">
       
       {/* 1. 상큼발랄 커버 */}
-      <header className="relative w-full h-screen flex flex-col items-center justify-start pt-12 overflow-hidden bg-gradient-to-b from-emerald-100 to-emerald-50">
+      <header className="relative w-full min-h-[85vh] pb-12 flex flex-col items-center justify-start pt-12 overflow-hidden bg-gradient-to-b from-emerald-100 to-emerald-50">
         <div className="z-10 text-center flex flex-col items-center mb-8 px-6">
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
@@ -81,7 +81,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
       </header>
 
       {/* 2. 인사말 */}
-      <section className="py-24 px-8 text-center relative bg-white">
+      <section className="py-12 px-8 text-center relative bg-white">
         <div className="absolute top-0 left-0 w-full h-10 bg-gradient-to-b from-emerald-50 to-white" />
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -89,7 +89,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
           viewport={{ once: true }}
         >
           <h2 className="text-xl text-emerald-600 mb-8">초대합니다</h2>
-          <p className="whitespace-pre-line text-lg leading-loose text-gray-700 mb-12">
+          <p className="whitespace-pre-line text-lg leading-loose text-gray-700 mb-8">
             {config.greetingMessage}
           </p>
           <div className="flex flex-col gap-4 text-base text-gray-600 bg-emerald-50 p-6 rounded-3xl">
@@ -112,19 +112,19 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
       </section>
 
       {/* TMI */}
-      <div className="bg-emerald-50 text-gray-900 py-10" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
+      <div className="bg-emerald-50 text-gray-900" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
         {config.useTmi !== false && <TmiSection config={config} />}
       </div>
 
       {/* 갤러리 */}
-      <div className="bg-white text-gray-900 py-10">
+      <div className="bg-white text-gray-900">
         {config.useGallery !== false && <Gallery config={config} />}
       </div>
 
       {/* 3. 타임라인 */}
       {config.scrollImages && config.scrollImages.length > 0 && (
-        <section className="py-20 bg-emerald-50">
-          <h2 className="text-center text-xl text-emerald-600 mb-12">우리아기 성장일기</h2>
+        <section className="py-10 bg-emerald-50">
+          <h2 className="text-center text-xl text-emerald-600 mb-8">우리아기 성장일기</h2>
           <div className="flex flex-col items-center px-6">
             {config.scrollImages.map((img, idx) => (
               <motion.div 
@@ -132,7 +132,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="w-full max-w-sm mb-16 bg-white p-4 rounded-3xl shadow-md relative"
+                className="w-full max-w-sm mb-8 bg-white p-4 rounded-3xl shadow-md relative"
               >
                 <div className="absolute -top-4 -left-4 bg-yellow-300 text-yellow-900 w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl shadow-md rotate-[-10deg]">
                   {img.month}개월
@@ -149,28 +149,28 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
 
       {/* 4. 장소 안내 */}
       {config.eventMode !== 'THANK_YOU' && (
-      <div className="bg-white py-10">
+      <div className="bg-white">
         <LocationBank config={config} />
       </div>
       )}
 
       {/* RSVP */}
       {config.useRsvp !== false && config.eventMode !== 'THANK_YOU' && (
-      <div className="bg-emerald-50 text-gray-900 py-10" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
+      <div className="bg-emerald-50 text-gray-900" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
         <RsvpForm config={config} />
       </div>
       )}
 
       {/* 5. 퀴즈 이벤트 */}
       {config.useQuiz !== false && config.eventMode !== 'THANK_YOU' && (
-      <div className="bg-white py-10">
+      <div className="bg-white">
         <Quiz config={config} />
       </div>
       )}
 
       {/* 6. 방명록 */}
       {config.useGuestbook !== false && config.eventMode !== 'THANK_YOU' && (
-      <div className="bg-emerald-50 py-10">
+      <div className="bg-emerald-50">
         <div className="text-center mb-6">
           <p className="text-emerald-500 text-sm mb-1">GUESTBOOK</p>
           <p className="text-gray-700 text-lg">도현이에게 축하 인사를 남겨주세요 💌</p>
@@ -182,7 +182,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
       
       {config.eventMode === 'THANK_YOU' && <QuizWinnerAnnounce />}
       {config.eventMode !== 'THANK_YOU' && (
-      <footer className="py-20 text-center bg-white text-gray-400 text-sm">
+      <footer className="py-10 text-center bg-white text-gray-400 text-sm">
         <p>{formattedDate}</p>
         <p className="mt-2">{config.babyName}의 첫 번째 생일</p>
       </footer>

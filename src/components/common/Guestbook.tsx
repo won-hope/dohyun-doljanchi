@@ -41,7 +41,7 @@ export default function Guestbook() {
   };
 
   return (
-    <section id="guestbook" className="py-[72px] px-6 max-w-md mx-auto">
+    <section id="guestbook" className="py-12 px-6 max-w-md mx-auto">
       <Reveal>
         <SectionHeading
           eyebrow="TIME CAPSULE"

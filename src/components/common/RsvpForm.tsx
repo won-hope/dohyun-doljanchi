@@ -91,7 +91,7 @@ export default function RsvpForm({ config }: { config: InvitationConfig }) {
   if (isSubmitted) {
     
     return (
-      <section id="rsvp" className="py-[72px] px-6 max-w-md mx-auto text-center">
+      <section id="rsvp" className="py-12 px-6 max-w-md mx-auto text-center">
         <Reveal>
           <div className="p-1 mb-8 rounded-3xl bg-gradient-to-br from-yellow-200 via-pink-200 to-blue-200 shadow-xl overflow-hidden relative">
             <div className="bg-paper rounded-[20px] p-6 text-center border border-white/50 relative overflow-hidden">
@@ -143,7 +143,7 @@ export default function RsvpForm({ config }: { config: InvitationConfig }) {
   }
 
   return (
-    <section id="rsvp" className="py-[72px] px-6 max-w-md mx-auto">
+    <section id="rsvp" className="py-12 px-6 max-w-md mx-auto">
       <Reveal>
         <SectionHeading
           eyebrow="RSVP"

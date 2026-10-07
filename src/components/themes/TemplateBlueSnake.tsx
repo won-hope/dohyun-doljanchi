@@ -71,7 +71,7 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
 
   return (
     <div
-      className="theme-blue-snake min-h-screen bg-paper text-ink pb-24 selection:bg-accent/20"
+      className="theme-blue-snake min-min-h-[85vh] pb-12 bg-paper text-ink pb-24 selection:bg-accent/20"
       style={
         {
           /* 맑은 옥빛 백자 한지와 단아한 쪽빛 잉크 팔레트 (RGB 채널) */

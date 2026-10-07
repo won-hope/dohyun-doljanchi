@@ -40,7 +40,7 @@ export default function LocationBank({
   };
 
   return (
-    <section id="location" className="py-[72px] px-6 max-w-md mx-auto">
+    <section id="location" className="py-12 px-6 max-w-md mx-auto">
       <Reveal>
         <SectionHeading eyebrow="LOCATION" title="오시는 길" />
 

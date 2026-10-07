@@ -61,7 +61,7 @@ export default function Quiz({ config }: { config: InvitationConfig }) {
   const isCorrect = selectedOpt === config.quizAnswerIndex;
 
   return (
-    <section id="quiz" className="py-[72px] px-6 max-w-md mx-auto">
+    <section id="quiz" className="py-12 px-6 max-w-md mx-auto">
       <Reveal>
         <SectionHeading
           eyebrow="QUIZ"

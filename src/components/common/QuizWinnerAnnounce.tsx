@@ -27,7 +27,7 @@ export default function QuizWinnerAnnounce() {
   };
 
   return (
-    <section className="py-[72px] px-6 max-w-md mx-auto text-center border-t border-line/60">
+    <section className="py-12 px-6 max-w-md mx-auto text-center border-t border-line/60">
       <Reveal>
         <SectionHeading
           eyebrow="EVENT WINNER"

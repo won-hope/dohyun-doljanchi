@@ -7,7 +7,7 @@ export default function TmiSection({ config }: { config: InvitationConfig }) {
   if (!config.tmiItems || config.tmiItems.length === 0) return null;
 
   return (
-    <section id="tmi" className="py-[72px] px-6 max-w-md mx-auto">
+    <section id="tmi" className="py-12 px-6 max-w-md mx-auto">
       <Reveal>
         <SectionHeading eyebrow="TMI" title={`${config.babyName}의 TMI`} description="우리가 몰랐던 작은 비밀들" />
 

@@ -30,14 +30,14 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
   }, [config.date]);
 
   return (
-    <div className="font-jua bg-baby-yellow text-gray-800 min-h-screen overflow-x-hidden pb-20" style={{ '--bg-color': '#fde68a', '--text-color': '#9333ea' } as React.CSSProperties}>
+    <div className="font-jua bg-baby-yellow text-gray-800 min-min-h-[85vh] pb-12 overflow-x-hidden pb-20" style={{ '--bg-color': '#fde68a', '--text-color': '#9333ea' } as React.CSSProperties}>
       
       {/* 커버 섹션 */}
       <header className="px-6 pt-20 pb-10 flex flex-col items-center justify-center relative overflow-hidden">
         <div className="absolute top-10 left-4 text-4xl opacity-50 animate-bounce">🎈</div>
         <div className="absolute top-20 right-6 text-3xl opacity-50 animate-pulse">✨</div>
 
-        <div className="bg-white p-4 pb-14 shadow-2xl rotate-[-4deg] hover:rotate-[2deg] transition-transform duration-500 rounded-2xl mb-12 w-full max-w-[320px] relative z-10 border-4 border-white">
+        <div className="bg-white p-4 pb-14 shadow-2xl rotate-[-4deg] hover:rotate-[2deg] transition-transform duration-500 rounded-2xl mb-8 w-full max-w-[320px] relative z-10 border-4 border-white">
           <div className="absolute -top-4 -left-4 text-4xl transform -rotate-12">🎀</div>
           
           {dDayStr && (
@@ -61,7 +61,7 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
       </header>
 
       {/* 인사말 섹션 */}
-      <section className="py-16 px-6 text-center relative z-10 bg-white/50 m-4 rounded-3xl shadow-sm border border-white">
+      <section className="py-10 px-6 text-center relative z-10 bg-white/50 m-4 rounded-3xl shadow-sm border border-white">
         <h2 className="text-2xl text-pink-500 mb-6 font-bold">초대하는 글</h2>
         <p className="whitespace-pre-line text-lg leading-relaxed text-gray-700 mb-8 font-sans font-medium">
           {config.greetingMessage}
@@ -93,8 +93,8 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
       </div>
 
       {config.scrollImages && config.scrollImages.length > 0 && (
-        <section className="py-20 bg-baby-blue/20">
-          <h2 className="text-3xl text-center text-blue-500 mb-16 font-bold">도현이의 1년 🐣</h2>
+        <section className="py-10 bg-baby-blue/20">
+          <h2 className="text-3xl text-center text-blue-500 mb-8 font-bold">도현이의 1년 🐣</h2>
           <div className="flex flex-col items-center">
             {config.scrollImages.map((img, idx) => (
               <motion.div 
@@ -103,7 +103,7 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
                 whileInView={{ opacity: 1, y: 0, rotate: idx % 2 === 0 ? -2 : 2 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ type: 'spring', bounce: 0.4 }}
-                className="w-full max-w-[280px] mb-20 relative"
+                className="w-full max-w-[280px] mb-10 relative"
               >
                 <div className="bg-white p-3 pb-12 shadow-xl rounded-xl border border-gray-100">
                   <img src={img.url} alt={img.caption} className="w-full aspect-square object-cover rounded-lg mb-4" />

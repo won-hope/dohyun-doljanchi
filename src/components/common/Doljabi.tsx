@@ -17,7 +17,7 @@ export default function Doljabi() {
   const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
 
   return (
-    <section className="py-20 px-6 max-w-md mx-auto">
+    <section className="py-10 px-6 max-w-md mx-auto">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
