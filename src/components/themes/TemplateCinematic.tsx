@@ -112,14 +112,18 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
       </section>
 
       {/* TMI */}
+      {config.useTmi !== false && (
       <div className="bg-emerald-50 text-gray-900" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
-        {config.useTmi !== false && <TmiSection config={config} />}
+        <TmiSection config={config} />
       </div>
+  )}
 
       {/* 갤러리 */}
+      {config.useGallery !== false && (
       <div className="bg-white text-gray-900">
-        {config.useGallery !== false && <Gallery config={config} />}
+        <Gallery config={config} />
       </div>
+  )}
 
       {/* 3. 타임라인 */}
       {config.scrollImages && config.scrollImages.length > 0 && (
@@ -159,7 +163,7 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
       <div className="bg-emerald-50 text-gray-900" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
         <RsvpForm config={config} />
       </div>
-      )}
+  )}
 
       {/* 5. 퀴즈 이벤트 */}
       {config.useQuiz !== false && config.eventMode !== 'THANK_YOU' && (
