@@ -1,6 +1,7 @@
 
 import { InvitationConfig } from '@/types';
 import Quiz from '@/components/common/Quiz';
+import QuizWinnerAnnounce from '@/components/common/QuizWinnerAnnounce';
 import Guestbook from '@/components/common/Guestbook';
 import LocationBank from '@/components/common/LocationBank';
 import Gallery from '@/components/common/Gallery';
@@ -147,33 +148,45 @@ export default function TemplateCinematic({ config }: { config: InvitationConfig
       )}
 
       {/* 4. 장소 안내 */}
+      {config.eventMode !== 'THANK_YOU' && (
       <div className="bg-white py-10">
         <LocationBank config={config} />
       </div>
+      )}
 
       {/* RSVP */}
+      {config.useRsvp !== false && config.eventMode !== 'THANK_YOU' && (
       <div className="bg-emerald-50 text-gray-900 py-10" style={{ '--bg-color': '#ecfdf5', '--text-color': '#064e3b' } as React.CSSProperties}>
         <RsvpForm config={config} />
       </div>
+      )}
 
       {/* 5. 퀴즈 이벤트 */}
+      {config.useQuiz !== false && config.eventMode !== 'THANK_YOU' && (
       <div className="bg-white py-10">
-        {config.useQuiz !== false && <Quiz config={config} />}
+        <Quiz config={config} />
       </div>
+      )}
 
       {/* 6. 방명록 */}
+      {config.useGuestbook !== false && config.eventMode !== 'THANK_YOU' && (
       <div className="bg-emerald-50 py-10">
         <div className="text-center mb-6">
           <p className="text-emerald-500 text-sm mb-1">GUESTBOOK</p>
           <p className="text-gray-700 text-lg">도현이에게 축하 인사를 남겨주세요 💌</p>
         </div>
-        {config.useGuestbook !== false && <Guestbook />}
+        <Guestbook />
       </div>
+      )}
 
+      
+      {config.eventMode === 'THANK_YOU' && <QuizWinnerAnnounce />}
+      {config.eventMode !== 'THANK_YOU' && (
       <footer className="py-20 text-center bg-white text-gray-400 text-sm">
         <p>{formattedDate}</p>
         <p className="mt-2">{config.babyName}의 첫 번째 생일</p>
       </footer>
+      )}
     </div>
   );
 }

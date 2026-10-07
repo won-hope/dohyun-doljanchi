@@ -344,6 +344,13 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
         </Reveal>
       </footer>
       )}
+
+      {/* Admin Link */}
+      <div className="py-6 text-center flex justify-center items-center">
+        <a href="/admin" className="text-[11px] text-mute/30 hover:text-mute/60 transition-colors">
+          Admin Settings
+        </a>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { InvitationConfig } from '@/types';
 import Guestbook from '@/components/common/Guestbook';
 import LocationBank from '@/components/common/LocationBank';
 import Quiz from '@/components/common/Quiz';
+import QuizWinnerAnnounce from '@/components/common/QuizWinnerAnnounce';
 import Gallery from '@/components/common/Gallery';
 import TmiSection from '@/components/common/TmiSection';
 import RsvpForm from '@/components/common/RsvpForm';
@@ -117,24 +118,33 @@ export default function TemplatePolaroid({ config }: { config: InvitationConfig 
         </section>
       )}
 
-      <LocationBank config={config} />
+      {config.eventMode !== 'THANK_YOU' && <LocationBank config={config} />}
       
+      {config.useRsvp !== false && config.eventMode !== 'THANK_YOU' && (
       <div className="bg-white/40">
         <RsvpForm config={config} />
       </div>
+      )}
 
+      {config.useQuiz !== false && config.eventMode !== 'THANK_YOU' && (
       <div className="bg-baby-pink/30 [&_.bg-white]:bg-white/80">
-        {config.useQuiz !== false && <Quiz config={config} />}
+        <Quiz config={config} />
       </div>
+      )}
       
+      {config.useGuestbook !== false && config.eventMode !== 'THANK_YOU' && (
       <div className="bg-white/50 text-gray-800">
-        {config.useGuestbook !== false && <Guestbook />}
+        <Guestbook />
       </div>
+      )}
 
+            {config.eventMode === 'THANK_YOU' && <QuizWinnerAnnounce />}
+      {config.eventMode !== 'THANK_YOU' && (
       <footer className="py-12 text-center text-gray-400 text-sm">
         <p>{formattedDate}</p>
         <p className="mt-2 text-xl text-pink-400">{config.babyName} 생일파티 🥳</p>
       </footer>
+      )}
     </div>
   );
 }

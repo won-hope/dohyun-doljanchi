@@ -905,8 +905,21 @@ function RsvpManager({ config, updateConfig }: { config: any, updateConfig: any 
   const totalChairs = entries.filter(e => e.isAttending && e.needBabyChair).length;
   const notAttending = entries.filter(e => !e.isAttending).length;
 
+
+  const handleResetRsvp = async () => {
+    if (!confirm('정말 모든 RSVP 내역을 삭제하시겠습니까? (복구 불가)')) return;
+    try {
+      await Promise.all(entries.map(entry => deleteDoc(doc(db, 'rsvp', entry.id))));
+      alert('RSVP 내역이 모두 초기화되었습니다.');
+    } catch (e) {
+      alert('초기화 중 오류가 발생했습니다.');
+    }
+  };
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={handleResetRsvp} className="text-xs text-red-500 font-bold hover:underline">전체 초기화</button>
+      </div>
       <div className="bg-green-50 p-4 rounded-xl border border-green-200 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div>
           <p className="text-[10px] font-bold text-green-700 mb-1">참석 (어른)</p>

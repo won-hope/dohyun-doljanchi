@@ -1,5 +1,6 @@
 import { InvitationConfig } from '@/types';
 import Quiz from '@/components/common/Quiz';
+import QuizWinnerAnnounce from '@/components/common/QuizWinnerAnnounce';
 import Guestbook from '@/components/common/Guestbook';
 import LocationBank from '@/components/common/LocationBank';
 import Gallery from '@/components/common/Gallery';
@@ -126,6 +127,8 @@ export default function TemplateEditorial({ config }: { config: InvitationConfig
       {/* 05. GALLERY */}
       {config.useGallery !== false && <Gallery config={config} />}
 
+      {config.eventMode !== 'THANK_YOU' && (
+      <>
       {/* 06. THE DAY — 날짜·시간·장소를 한눈에 */}
       <section id="day" className="py-[72px] px-6 bg-paper-deep">
         <Reveal className="max-w-md mx-auto">
@@ -169,8 +172,12 @@ export default function TemplateEditorial({ config }: { config: InvitationConfig
       <RsvpForm config={config} />
       {config.useQuiz !== false && <Quiz config={config} />}
       {config.useGuestbook !== false && <Guestbook />}
+      </>
+      )}
 
+      {config.eventMode === 'THANK_YOU' && <QuizWinnerAnnounce />}
       {/* 11. THANK YOU */}
+      {config.eventMode !== 'THANK_YOU' && (
       <footer className="py-[72px] px-6 bg-paper-deep text-center">
         <Reveal className="max-w-md mx-auto">
           <SectionHeading
@@ -181,6 +188,7 @@ export default function TemplateEditorial({ config }: { config: InvitationConfig
           <ShareButton config={config} />
         </Reveal>
       </footer>
+      )}
     </div>
   );
 }
