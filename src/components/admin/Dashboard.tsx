@@ -152,6 +152,47 @@ export default function Dashboard() {
     <div className="space-y-10">
       <GeneralSettingsManager config={config} updateConfig={updateConfig} />
 
+      <div className="bg-white p-5 rounded-2xl shadow-sm border-2 border-pink-200 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-bold text-gray-800 text-lg">📢 행사 모드 설정</h2>
+          <select 
+            value={config.eventMode || 'INVITATION'} 
+            onChange={e => updateConfig({ eventMode: e.target.value as 'INVITATION' | 'THANK_YOU' })}
+            className="border-2 border-pink-200 rounded-lg p-2 font-bold text-pink-600 outline-none"
+          >
+            <option value="INVITATION">행사 전 (초대장 모드)</option>
+            <option value="THANK_YOU">행사 후 (감사 모드)</option>
+          </select>
+        </div>
+        <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+          <strong>초대장 모드</strong>: 오시는 길, 참석 여부, 퀴즈 등이 보입니다.<br/>
+          <strong>감사 모드</strong>: 행사 종료 후 스냅 사진을 공유하고 감사 인사를 전합니다. 오시는 길 등은 숨겨집니다.
+        </p>
+        
+        <div className="border-t border-gray-100 pt-4 mt-4">
+          <h3 className="font-bold text-gray-700 text-sm mb-2">🎙️ 부모님 육성 감사 인사 (오디오)</h3>
+          <div className="flex gap-2 items-center">
+            <input 
+              type="text" 
+              value={config.audioGreetingUrl || ''} 
+              readOnly 
+              placeholder="업로드된 오디오 파일이 없습니다" 
+              className="flex-1 p-2 border rounded-lg text-sm bg-gray-50 text-gray-500" 
+            />
+            <label className="bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-bold text-sm cursor-pointer hover:bg-pink-200 transition">
+              {uploading ? '업로드 중...' : '파일 찾기'}
+              <input type="file" accept="audio/*" onChange={handleAudioUpload} disabled={uploading} className="hidden" />
+            </label>
+            {config.audioGreetingUrl && (
+              <button onClick={() => updateConfig({ audioGreetingUrl: '' })} className="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg font-bold text-sm hover:bg-gray-200">
+                삭제
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+
       <details className="group bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 [&_summary::-webkit-details-marker]:hidden">
   <summary className="flex justify-between items-center cursor-pointer font-bold text-gray-800 text-lg outline-none">
     1. 디자인 테마 선택
@@ -394,7 +435,7 @@ import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 function QuizManager({ config, updateConfig }: { config: any, updateConfig: any }) {
-  const { submissions, loading } = useQuiz();
+  const { submissions, loading, updateSubmission } = useQuiz();
   
   const [question, setQuestion] = useState(config.quizQuestion || '');
   const [options, setOptions] = useState(config.quizOptions || ['', '', '', '']);
@@ -429,46 +470,6 @@ function QuizManager({ config, updateConfig }: { config: any, updateConfig: any 
 
   return (
     <div className="space-y-6">
-
-      <div className="bg-white p-5 rounded-2xl shadow-sm border-2 border-pink-200 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-bold text-gray-800 text-lg">📢 행사 모드 설정</h2>
-          <select 
-            value={config.eventMode || 'INVITATION'} 
-            onChange={e => updateConfig({ eventMode: e.target.value })}
-            className="border-2 border-pink-200 rounded-lg p-2 font-bold text-pink-600 outline-none"
-          >
-            <option value="INVITATION">행사 전 (초대장 모드)</option>
-            <option value="THANK_YOU">행사 후 (감사 모드)</option>
-          </select>
-        </div>
-        <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-          <strong>초대장 모드</strong>: 오시는 길, 참석 여부, 퀴즈 등이 보입니다.<br/>
-          <strong>감사 모드</strong>: 행사 종료 후 스냅 사진을 공유하고 감사 인사를 전합니다. 오시는 길 등은 숨겨집니다.
-        </p>
-        
-        <div className="border-t border-gray-100 pt-4 mt-4">
-          <h3 className="font-bold text-gray-700 text-sm mb-2">🎙️ 부모님 육성 감사 인사 (오디오)</h3>
-          <div className="flex gap-2 items-center">
-            <input 
-              type="text" 
-              value={config.audioGreetingUrl || ''} 
-              readOnly 
-              placeholder="업로드된 오디오 파일이 없습니다" 
-              className="flex-1 p-2 border rounded-lg text-sm bg-gray-50 text-gray-500" 
-            />
-            <label className="bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-bold text-sm cursor-pointer hover:bg-pink-200 transition">
-              {uploading ? '업로드 중...' : '파일 찾기'}
-              <input type="file" accept="audio/*" onChange={handleAudioUpload} disabled={uploading} className="hidden" />
-            </label>
-            {config.audioGreetingUrl && (
-              <button onClick={() => updateConfig({ audioGreetingUrl: '' })} className="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg font-bold text-sm hover:bg-gray-200">
-                삭제
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
 
       <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 space-y-3">
         <h3 className="font-bold text-blue-800 text-sm">퀴즈 내용 커스터마이징</h3>
@@ -526,10 +527,21 @@ function QuizManager({ config, updateConfig }: { config: any, updateConfig: any 
             {submissions.map(sub => (
               <div key={sub.id} className={`p-3 rounded-lg text-sm flex flex-col gap-1 ${sub.isCorrect ? 'bg-green-100 text-green-900 border border-green-200' : 'bg-white border text-gray-600'}`}>
                 <div className="flex justify-between items-center font-bold">
-                  <span>{sub.name}</span>
-                  <span>{options[sub.answerIndex] || '?'}</span>
+                  <span>{sub.name} {sub.isWinner && '🎁 (당첨)'}</span>
+                  <div className="flex items-center gap-2">
+                    <span>{options[sub.answerIndex] || '?'}</span>
+                    {sub.isCorrect && (
+                      <button 
+                        onClick={() => updateSubmission(sub.id, { isWinner: !sub.isWinner })} 
+                        className={`text-xs px-2 py-1 rounded ${sub.isWinner ? 'bg-pink-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                      >
+                        {sub.isWinner ? '당첨 취소' : '당첨!'}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {sub.comment && <p className="text-xs mt-1 bg-white/50 p-2 rounded">{sub.comment}</p>}
+                {sub.isWinner && sub.phone && <p className="text-xs text-pink-600 font-bold mt-1">연락처: {sub.phone}</p>}
               </div>
             ))}
             {submissions.length === 0 && <p className="text-xs text-gray-400">아직 참여자가 없습니다.</p>}

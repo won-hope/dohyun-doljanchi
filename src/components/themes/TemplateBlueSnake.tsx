@@ -1,5 +1,7 @@
+import AudioGreeting from "@/components/common/AudioGreeting";
 import { InvitationConfig } from '@/types';
 import Quiz from '@/components/common/Quiz';
+import QuizWinnerAnnounce from '@/components/common/QuizWinnerAnnounce';
 import Guestbook from '@/components/common/Guestbook';
 import LocationBank from '@/components/common/LocationBank';
 import Gallery from '@/components/common/Gallery';
@@ -165,6 +167,8 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
         </div>
       </header>
 
+      {config.eventMode !== 'THANK_YOU' && (
+      <>
       {/* 02. BLESSING & INVITATION — 청사의 지혜와 축복 & 초대 말씀 */}
       <section id="blessing" className="px-6 pb-[72px]">
         <Reveal className="max-w-md mx-auto">
@@ -202,6 +206,9 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
           </p>
         </Reveal>
       </section>
+
+      </>
+      )}
 
       {/* 03. OUR STORY — 성장 타임라인 */}
       {config.useStory !== false && story.length > 0 && (
@@ -312,7 +319,9 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
       {config.useQuiz !== false && <Quiz config={config} />}
       </>
       )}
-      {config.useGuestbook !== false && <Guestbook />}
+      {config.eventMode !== 'THANK_YOU' && config.useGuestbook !== false && <Guestbook />}
+
+      {config.eventMode === 'THANK_YOU' && <QuizWinnerAnnounce />}
 
       {/* 11. THANK YOU & SHARE */}
       <footer className="py-[72px] px-6 bg-paper-deep text-center border-t border-line/60">
@@ -325,7 +334,7 @@ export default function TemplateBlueSnake({ config }: { config: InvitationConfig
             title="감사합니다"
             description={`${config.babyName}의 첫돌을 축하해 주셔서 진심으로 감사드립니다`}
           />
-          <ShareButton config={config} />
+          {config.eventMode !== 'THANK_YOU' && <ShareButton config={config} />}
         </Reveal>
       </footer>
     </div>
